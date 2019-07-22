@@ -6,6 +6,8 @@
 #include <vector>
 using namespace std;
 
+// Testing
+
 class Figure {
 public:
 	Figure() {}
