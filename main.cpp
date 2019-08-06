@@ -8,24 +8,30 @@ using namespace std;
 
 class Figure {
 	int row, col;
-	int row_turn, col_turn;
 	char color;
 public:	
 	Figure(int st_row, int st_col, char st_color) {
 		row = st_row;
 		col = st_col;
 		color = st_color;
-		row_turn = col_turn = 0;
+	}
+	bool check_turn_for_everyone(int dst_row, int dst_col, char dst_color) const {
+		if (get_col() == dst_col && get_row() == dst_row) { 
+			cout << "You do not move" << endl; 
+			return false; 
+		}
+		if (get_color() == dst_color) { 
+			cout << "There are your figure" << endl; 
+			return false; 
+		}
+		if (!(dst_col < 8 && get_col() >= 0 && dst_row < 8 && get_row() >= 0)) {
+			cout << "the move is not correct" << endl;
+			return false;
+		}
+		return true;
 	}
 	virtual bool check_turn(int dst_row, int dst_col, char dst_color) {
-	/*	if (dst_row < col) col_turn = -col_turn;
-		if (dst_row < row) row_turn = -row_turn;
-		for (int i = col_turn, j = row_turn; col_turn + i < dst_col; i += col_turn, j += row_turn) {
-			if (field[row + j][col + i]->name != "0") return 0;
-		}
-		return 1;*/
 		return true;
-		// TODO: make check based on row_turn, col_turn
 	}
 	char get_color() const {
 		return color;
@@ -36,10 +42,10 @@ public:
 	char get_col() const {
 		return col;
 	}
-	void change_row(int row_n) {
+	void set_row(int row_n) {
 		row = row_n;
 	}
-	void change_col(int col_n)  {
+	void set_col(int col_n)  {
 		col = col_n;
 	}
 	virtual char to_char() const = 0;
@@ -51,8 +57,9 @@ public:
 		// TODO: define row_turn, col_turn
 	}
 	bool check_turn(int dst_row, int dst_col, char dst_color) {
-		if (get_col() == dst_col && get_row() == dst_row) { cout << "You do not move" << endl; return 0; }
-		if (get_color() == dst_color) {cout << "There are your figure" << endl; return 0;}
+		if (!(check_turn_for_everyone(dst_row, dst_col, dst_color))) {
+			return false;
+		}
 		if (get_color() == 'b') {
 			if (!(dst_col < 7 && get_col() >= 0 && dst_row < 8 && get_row() >= 0)) {
 				return false;
@@ -103,23 +110,20 @@ public:
 class Rook : public Figure {
 public:
 	Rook(int st_row, int st_col, char st_color) : Figure(st_row, st_col, st_color) {}
-	bool check_turn(int dst_row, int dst_col, char dst_color) const {
-		if (get_col() == dst_col && get_row() == dst_row) { cout << "You do not move"; return 0; }
-		if (get_color() == dst_color) { cout << "There are your figure" << endl; return 0; }
-		if (!(dst_col < 8 && get_col() >= 0 && dst_row < 8 && get_row() >= 0)) {
-			cout << "the move is not correct" << endl;
+	bool check_turn(int dst_row, int dst_col, char dst_color) {
+		if (!(check_turn_for_everyone(dst_row, dst_col, dst_color))) {
 			return false;
 		}
 		if (get_col() == dst_col) {
 //			if (check_turn_general(0, 1, next)) 
-			return 1;
+			return true;
 		}
 		if (get_row() == dst_row) {
 //			if (check_turn_general(1, 0, next)) 
-			return 1;
+			return true;
 		}
 		cout << "the move is not correct" << endl;
-		return 0;
+		return false;
 	}
 	char to_char() const {
 		return 'R';
@@ -128,19 +132,16 @@ public:
 class Horse : public Figure {
 public:
 	Horse(int st_row, int st_col, char st_color) : Figure(st_row, st_col, st_color) {}
-	bool check_turn(int dst_row, int dst_col, char dst_color) const {
-		if (get_col() == dst_col && get_row() == dst_row) { cout << "You do not move"; return 0; }
-		if (get_color() == dst_color) { cout << "There are your figure" << endl; return 0; }
-		if (!(dst_col < 8 && get_col() >= 0 && dst_row < 8 && get_row() >= 0)) {
-			cout << "the move is not correct" << endl;
+	bool check_turn(int dst_row, int dst_col, char dst_color) {
+		if (!(check_turn_for_everyone(dst_row, dst_col, dst_color))) {
 			return false;
 		}
 		if ((abs(get_col() - dst_col) == 2 && abs(get_row() - dst_row) == 1) ||
 			(abs(get_col() - dst_col) == 1 && abs(get_row() - dst_row) == 2)) {
-			return 1;
+			return true;
 		}
 		cout << "the move is not correct" << endl;
-		return 0;
+		return false;
 	}
 	char to_char() const {
 		return 'H';
@@ -149,23 +150,16 @@ public:
 class Elephant : public Figure {
 public:
 	Elephant(int st_row, int st_col, char st_color) : Figure(st_row, st_col, st_color) {}
-	bool check_turn(int dst_row, int dst_col, char dst_color) const {
-		if (get_col() == dst_col && get_row() == dst_row) { cout << "You do not move"; return 0; }
-		if (get_color() == dst_color) { cout << "There are your figure" << endl; return 0; }
-		if (!(dst_col < 8 && get_col() >= 0 && dst_row < 8 && get_row() >= 0)) {
-			cout << "the move is not correct" << endl;
+	bool check_turn(int dst_row, int dst_col, char dst_color) {
+		if (!(check_turn_for_everyone(dst_row, dst_col, dst_color))) {
 			return false;
 		}
-		if (get_col() == dst_col) {
+		if (abs(get_col() - dst_col) == abs(get_row() - dst_row)) {
 			//			if (check_turn_general(0, 1, next)) 
-			return 1;
-		}
-		if (get_row() == dst_row) {
-			//			if (check_turn_general(1, 0, next)) 
-			return 1;
+			return true;
 		}
 		cout << "the move is not correct" << endl;
-		return 0;
+		return false;
 	}
 	char to_char() const {
 		return 'E';
@@ -174,27 +168,24 @@ public:
 class Queen : public Figure {
 public:
 	Queen(int st_row, int st_col, char st_color) : Figure(st_row, st_col, st_color) {}
-	bool check_turn(int dst_row, int dst_col, char dst_color) const {
-		if (get_col() == dst_col && get_row() == dst_row) { cout << "You do not move"; return 0; }
-		if (get_color() == dst_color) { cout << "There are your figure" << endl; return 0; }
-		if (!(dst_col <= 8 && get_col() > 0 && dst_row < 8 && get_row() >= 0)) {
-			cout << "the move is not correct" << endl;
-			return 0;
+	bool check_turn(int dst_row, int dst_col, char dst_color) {
+		if (!(check_turn_for_everyone(dst_row, dst_col, dst_color))) {
+			return false;
 		}
 		if (get_col() == dst_col) {
 //			if (check_turn_general(0, 1, next)) 
-				return 1;
+				return true;
 		}
 		if (get_row() == dst_row) {
 //			if (check_turn_general(1, 0, next)) 
-			return 1;
+			return true;
 		}
 		if (abs(get_col() - dst_col) == abs(get_row() - dst_row)) {
 //			if (check_turn_general(1, 1, next)) 
-			return 1;
+			return true;
 		}
 		cout << "the move is not correct" << endl;
-		return 0;
+		return false;
 	}
 	char to_char() const {
 		return 'Q';
@@ -203,28 +194,26 @@ public:
 class King : public Figure {
 public:
 	King(int st_row, int st_col, char st_color) : Figure(st_row, st_col, st_color) {}
-	bool check_turn(int dst_row, int dst_col, char dst_color) const {
-		if (get_col() == dst_col && get_row() == dst_row) { cout << "You do not move"; return 0; }
-		if (get_color() == dst_color) { cout << "There are your figure" << endl; return 0; }
-		if (!(dst_col < 8 && get_col() >= 0 && dst_row < 8 && get_row() >= 0)) {
-			cout << "the move is not correct" << endl;
-			return 0;
+	bool check_turn(int dst_row, int dst_col, char dst_color) {
+		if (!(check_turn_for_everyone(dst_row, dst_col, dst_color))) {
+			return false;
 		}
 		if (abs(get_col() - dst_col) < 2 && abs(get_row() - dst_row) < 2) {
-			return 1;
+			return true;
 		}
 		cout << "the move is not correct" << endl;
-		return 0;
+		return false;
 	}
 	char to_char() const {
 		return 'K';
 	}
 };
 
-
 class Chess {
 	bool make_turn(char cur_color);
 	void print_field();
+	int king_col_white, king_row_white, king_col_black, king_row_black;
+	bool check_shah(int, int);
 	Figure* field[8][8] = { nullptr };
 public:
 	void start_game();
@@ -237,6 +226,10 @@ public:
 			field[i][2] = new Elephant(i, 2, color);
 			field[i][3] = new Queen(i, 3, color);
 			field[i][4] = new King(i, 4, color);
+			set_row(0, 'b');
+			set_col(4, 'b');
+			set_row(7, 'w');
+			set_col(4, 'w');
 			field[i][5] = new Elephant(i, 5, color);
 			field[i][6] = new Horse(i, 6, color);
 			field[i][7] = new Rook(i, 7, color);
@@ -247,21 +240,183 @@ public:
 			color = 'w';
 		}
 	}
+	void set_row(int row_n, char color) {
+		if (color == 'w') {
+			king_row_white = row_n;
+		}
+		else {
+			king_row_black = row_n;
+		}
+	}
+	void set_col(int col_n, char color) {
+		if (color == 'w') {
+			king_col_white = col_n;
+		}
+		else {
+			king_col_black = col_n;
+		}
+	}
+	char get_row(char color) {
+		if (color == 'w') {
+			return king_row_white;
+		}
+		else {
+			return king_row_black;
+		}
+	}
+	char get_col(char color) {
+		if (color == 'w') {
+			return king_col_white;
+		}
+		else {
+			return king_col_black;
+		}
+	}
 };
+
+bool Chess::check_shah(int get_row, int get_col) {
+	for (int i = get_col+1; i < 8; i++)
+	{
+		if (field[i][get_col] == nullptr) {
+			continue;
+		}
+		if (field[i][get_col]->get_color() == field[get_row][get_col]->get_color() && field[get_row][get_col]->get_color() != 'K') {
+			break;
+		}
+		if (field[i][get_col]->to_char() == 'R' || field[i][get_col]->to_char() == 'Q') {
+			cout << "your king is under attack" << endl;
+			return false;
+		}
+	}
+	for (int i = get_col-1; i > -1; i--)
+	{
+		if (field[i][get_col] == nullptr) {
+			continue;
+		}
+		if (field[i][get_col]->get_color() == field[get_row][get_col]->get_color() && field[get_row][get_col]->get_color() != 'K') {
+			break;
+		}
+		if (field[i][get_col]->to_char() == 'R' || field[i][get_col]->to_char() == 'Q') {
+			cout << "your king is under attack" << endl;
+			return false;
+
+		}
+	}
+	for (int i = get_row+1; i < 8; i++)
+	{
+		if (field[get_row][i] == nullptr) {
+			continue;
+		}
+		if (field[get_row][i]->get_color() == field[get_row][get_col]->get_color() && field[get_row][get_col]->get_color() != 'K') {
+			break;
+		}
+		if (field[get_row][i]->to_char() == 'R' || field[get_row][i]->to_char() == 'Q') {
+			cout << "your king is under attack" << endl;
+			return false;
+
+		}
+	}
+	for (int i = get_row-1; i > -1; i--)
+	{
+		if (field[get_row][i] == nullptr) {
+			continue;
+		}
+		if (field[get_row][i]->get_color() == field[get_row][get_col]->get_color() && field[get_row][get_col]->get_color() != 'K') {
+			break;
+		}
+		if (field[get_row][i]->to_char() == 'R' || field[get_row][i]->to_char() == 'Q') {
+			cout << "your king is under attack" << endl;
+			return false;
+
+		}
+	}
+	for (int i = get_row+1, j = get_col+1; i < 8 && j < 8; i++, j++) {
+		if (field[i][j] == nullptr) {
+			continue;
+		}
+		if (field[i][j]->get_color() == field[get_row][get_col]->get_color() && field[get_row][get_col]->get_color() != 'K') {
+			break;
+		}
+		if (field[i][j]->to_char() == 'E' || field[i][j]->to_char() == 'Q') {
+			cout << "your king is under attack" << endl;
+			return false;
+		}
+	}
+	for (int i = get_row-1, j = get_col-1; i > -1 && j > -1; i--, j--) {
+		if (field[i][j] == nullptr) {
+			continue;
+		}
+		if (field[i][j]->get_color() == field[get_row][get_col]->get_color() && field[get_row][get_col]->get_color() != 'K') {
+			break;
+		}
+		if (field[i][j]->to_char() == 'E' || field[i][j]->to_char() == 'Q') {
+			cout << "your king is under attack" << endl;
+			return false;
+		}
+	}
+	for (int i = get_row+1, j = get_col-1; i < 8 && j > -1; i++, j--) {
+		if (field[i][j] == nullptr) {
+			continue;
+		}
+		if (field[i][j]->get_color() == field[get_row][get_col]->get_color() && field[get_row][get_col]->get_color() != 'K') {
+			break;
+		}
+		if (field[i][j]->to_char() == 'E' || field[i][j]->to_char() == 'Q') {
+			cout << "your king is under attack" << endl;
+			return false;
+		}
+	}
+	for (int i = get_row-1, j = get_col+1; i > -1 && j < 8; i--, j++) {
+		if (field[i][j] == nullptr) {
+			continue;
+		}
+		if (field[i][j]->get_color() == field[get_row][get_col]->get_color() && field[get_row][get_col]->get_color() != 'K') {
+			break;
+		}
+		if (field[i][j]->to_char() == 'E' || field[i][j]->to_char() == 'Q') {
+			cout << "your king is under attack" << endl;
+			return false;
+		}
+	}
+	if ((get_col + 1 < 8 && ((get_row + 2 < 8 && field[get_row + 2][get_col + 1] != nullptr && field[get_row + 2][get_col + 1]->to_char() == 'H' && field[get_row + 2][get_col + 1]->get_color() != field[get_row][get_col]->get_color()) ||
+	                         (get_row - 2 > -1 && field[get_row - 2][get_col + 1] != nullptr && field[get_row - 2][get_col + 1]->to_char() == 'H' && field[get_row - 2][get_col + 1]->get_color() != field[get_row][get_col]->get_color()))) ||
+	   (get_col - 1 > -1 && ((get_row + 2 < 8 && field[get_row + 2][get_col - 1] != nullptr && field[get_row + 2][get_col - 1]->to_char() == 'H' && field[get_row + 2][get_col - 1]->get_color() != field[get_row][get_col]->get_color()) ||
+		                     (get_row - 2 > -1 && field[get_row - 2][get_col - 1] != nullptr && field[get_row - 2][get_col - 1]->to_char() == 'H' && field[get_row - 2][get_col - 1]->get_color() != field[get_row][get_col]->get_color())))){
+		cout << "your king is under attack" << endl;
+		return false;
+	}
+	if((get_col + 1 < 8 && ((get_row + 1 < 8 && field[get_row + 1][get_col + 1] != nullptr && field[get_row + 1][get_col + 1]->to_char() == 'K') ||
+		                      (get_row - 1 > -1 && field[get_row - 1][get_col + 1] != nullptr && field[get_row - 1][get_col + 1]->to_char() == 'K')))||
+	   (get_col - 1 > -1 && ((get_row + 1 < 8 && field[get_row + 1][get_col - 1] != nullptr && field[get_row + 1][get_col - 1]->to_char() == 'K') ||
+	                          (get_row - 1 > -1 && field[get_row - 1][get_col - 1] != nullptr && field[get_row - 1][get_col - 1]->to_char() == 'K')))){
+		cout << "your king is under attack" << endl;
+		return false;
+	}
+	return true;
+}
 
 bool Chess::make_turn(char cur_color) {
 	while (true) {
-		int col_t, row_t, col_n, row_n;
+		int col_t, row_t, col_n, row_n, k = 0;
+		int row_tf, row_nf;
+		char col_tf, col_nf;
 		char color_next;
-		cin >> row_t >> col_t >> row_n >> col_n;
+		cout << "input the cage where your figure is" << endl;
+		cin >> row_tf >> col_tf;
+		row_t = 7 - row_tf + 1;
+		col_t = col_tf - 'a';
+		cout << "input the cage where your figure will move" << endl;
+		cin >> row_nf >> col_nf;
+		row_n = 7 - row_nf + 1;
+		col_n = col_nf - 'a';
 		if (field[row_n][col_n] == nullptr) color_next = '0';
 		else color_next = field[row_n][col_n]->get_color();
+		if (field[row_t][col_t] == nullptr) {
+			cout << "there is no Figure" << endl;
+			continue;
+		}
 		if (cur_color == field[row_t][col_t]->get_color()) {
 
-			if (field[row_t][col_t] == nullptr) {
-				cout << "there is no Figure" << endl;
-				continue;
-			}
 			if (field[row_t][col_t]->get_color() != cur_color) {
 				cout << "it's not your figure" << endl;
 				continue;
@@ -315,19 +470,40 @@ bool Chess::make_turn(char cur_color) {
 				}
 				if (col_n < col_t) col = -col;
 				if (row_n < row_t) row = -row;
-				for (int i = col, j = row; col_t + i < col_n; i += col, j += row) {
-					if (field[row_t + j][col_t + i] != nullptr) continue;
+				for (int i = col, j = row; col_t + i != col_n || row_t + j != row_n; i += col, j += row) {
+					if (field[row_t + j][col_t + i] != nullptr) {
+						k = 1;
+						break;
+					}
+				}
+				if (k == 1) {
+					cout << "you can't make the turn" << endl;
+					continue; 
 				}
 			}
-			if (field[col_n][row_n] != nullptr) {
-				delete field[row_n][col_n];
+			Figure* keep = field[row_n][col_n];
+			if (field[row_t][col_t]->to_char() == 'K') {
+				set_col(col_n, cur_color);
+				set_row(row_n, cur_color);
 			}
 			field[row_n][col_n] = field[row_t][col_t];
-			field[row_n][col_n]->change_col(col_n);
-			field[row_n][col_n]->change_row(row_n);
+			field[row_n][col_n]->set_col(col_n);
+			field[row_n][col_n]->set_row(row_n);
 			field[row_t][col_t] = nullptr;
-			break;
-			return true;
+			if (check_shah(get_row(cur_color), get_col(cur_color))) {
+				if(field[row_n][col_n] != nullptr) delete keep;
+				return true;
+			}
+			else {
+				field[row_t][col_t] = field[row_n][col_n];
+				field[row_t][col_t]->set_col(col_t);
+				field[row_t][col_t]->set_row(row_t);
+				field[row_n][col_n] = keep;
+				if (field[row_t][col_t]->to_char() == 'K') {
+					set_col(col_t, cur_color);
+					set_row(row_t, cur_color);
+				}
+			}
 		}
 		else cout << "It is not your turn" << endl;
 	}
@@ -335,7 +511,7 @@ bool Chess::make_turn(char cur_color) {
 
 void Chess::print_field() {
 	for (int i = 0; i < 8; i++) {
-		cout << i << " ";
+		cout << 8-i << " ";
 		for (int j = 0; j < 8; j++) {
 			if (field[i][j] == nullptr) {
 				cout << "00";
@@ -348,7 +524,7 @@ void Chess::print_field() {
 		cout << endl;
 	}
 	cout << "  ";
-	for (int i = 0; i < 8; i++) cout << i << "  ";
+	for (char i = 'a'; i < 'i'; i++) cout << i << "  ";
 	cout << endl;
 }
 
