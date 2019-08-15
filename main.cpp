@@ -24,7 +24,7 @@ public:
 			cout << "There are your figure" << endl; 
 			return false; 
 		}
-		if (!(dst_col < 8 && get_col() >= 0 && dst_row < 8 && get_row() >= 0)) {
+		if (!(dst_col < 8 && dst_col >= 0 && get_col() >= 0 && get_col() < 8 && dst_row < 8 && dst_row >= 0 && get_row() >= 0 && get_row() < 8)) {
 			cout << "the move is not correct" << endl;
 			return false;
 		}
@@ -54,23 +54,22 @@ public:
 class Pawn : public Figure {
 public:
 	Pawn(int st_row, int st_col, char st_color) : Figure(st_row, st_col, st_color) {
-		// TODO: define row_turn, col_turn
 	}
 	bool check_turn(int dst_row, int dst_col, char dst_color) {
 		if (!(check_turn_for_everyone(dst_row, dst_col, dst_color))) {
 			return false;
 		}
 		if (get_color() == 'b') {
-			if (!(dst_col < 7 && get_col() >= 0 && dst_row < 8 && get_row() >= 0)) {
+			if (!(dst_row < 7)) {// black pawn can't be in a 7th row 
 				return false;
 			}
 			if (get_col() == dst_col) {
 				if (dst_row - get_row() == 1) {
-//					if (dst_row == 0) become_new_figure();
+//					if (dst_row == 0) become_new_figure(); TODO
 					return true;
 				}
 				if (get_row() == 1 && dst_row == 3) {
-//					if (field[2][col]->color == "empty") {
+//					if (field[2][col]->color == "empty") { TODO
 //						if (dst_row == 0) become_new_figure();
 						return true;
 	//				}
@@ -81,16 +80,16 @@ public:
 			}
 		}
 		if (get_color() == 'w') {
-			if (!(dst_col < 8 && get_col() > 0 && dst_row < 8 && get_row() > 0)) {
+			if (!(get_row() > 0)) {// white pawn can't be in a 0 row
 				return false;
 			}
 			if (get_col() == dst_col) {
 				if (get_row() - dst_row == 1) {
-	//				if (dst_row == 7) become_new_figure();
+	//				if (dst_row == 7) become_new_figure(); TODO
 					return true;
 				}
 				if (get_row() == 6 && dst_row == 4) {
-	//				if (field[5][col]->get_color() == "empty") {
+	//				if (field[5][col]->get_color() == "empty") { TODO
 	//					if (dst_row == 7) become_new_figure();
 						return true;
 //					}
@@ -115,11 +114,9 @@ public:
 			return false;
 		}
 		if (get_col() == dst_col) {
-//			if (check_turn_general(0, 1, next)) 
 			return true;
 		}
 		if (get_row() == dst_row) {
-//			if (check_turn_general(1, 0, next)) 
 			return true;
 		}
 		cout << "the move is not correct" << endl;
@@ -155,7 +152,6 @@ public:
 			return false;
 		}
 		if (abs(get_col() - dst_col) == abs(get_row() - dst_row)) {
-			//			if (check_turn_general(0, 1, next)) 
 			return true;
 		}
 		cout << "the move is not correct" << endl;
@@ -173,15 +169,12 @@ public:
 			return false;
 		}
 		if (get_col() == dst_col) {
-//			if (check_turn_general(0, 1, next)) 
 				return true;
 		}
 		if (get_row() == dst_row) {
-//			if (check_turn_general(1, 0, next)) 
 			return true;
 		}
 		if (abs(get_col() - dst_col) == abs(get_row() - dst_row)) {
-//			if (check_turn_general(1, 1, next)) 
 			return true;
 		}
 		cout << "the move is not correct" << endl;
@@ -274,13 +267,13 @@ public:
 	}
 };
 
-bool Chess::check_shah(int get_row, int get_col) {
-	for (int i = get_col+1; i < 8; i++)
+bool Chess::check_shah(int get_row, int get_col) { //I move king anyways and then check it is ok or not
+	for (int i = get_col+1; i < 8; i++) //check rook and queen attack from the right side
 	{
 		if (field[i][get_col] == nullptr) {
 			continue;
 		}
-		if (field[i][get_col]->get_color() == field[get_row][get_col]->get_color() && field[get_row][get_col]->get_color() != 'K') {
+		if (field[i][get_col]->get_color() == field[get_row][get_col]->get_color()) { //they can't attack throw your figure
 			break;
 		}
 		if (field[i][get_col]->to_char() == 'R' || field[i][get_col]->to_char() == 'Q') {
@@ -288,12 +281,12 @@ bool Chess::check_shah(int get_row, int get_col) {
 			return false;
 		}
 	}
-	for (int i = get_col-1; i > -1; i--)
+	for (int i = get_col-1; i > -1; i--)//check rook and queen attack from the left side
 	{
 		if (field[i][get_col] == nullptr) {
 			continue;
 		}
-		if (field[i][get_col]->get_color() == field[get_row][get_col]->get_color() && field[get_row][get_col]->get_color() != 'K') {
+		if (field[i][get_col]->get_color() == field[get_row][get_col]->get_color()) {//they can't attack throw your figure
 			break;
 		}
 		if (field[i][get_col]->to_char() == 'R' || field[i][get_col]->to_char() == 'Q') {
@@ -302,12 +295,12 @@ bool Chess::check_shah(int get_row, int get_col) {
 
 		}
 	}
-	for (int i = get_row+1; i < 8; i++)
+	for (int i = get_row+1; i < 8; i++)//check rook and queen attack from the botton
 	{
 		if (field[get_row][i] == nullptr) {
 			continue;
 		}
-		if (field[get_row][i]->get_color() == field[get_row][get_col]->get_color() && field[get_row][get_col]->get_color() != 'K') {
+		if (field[get_row][i]->get_color() == field[get_row][get_col]->get_color()) {//they can't attack throw your figure
 			break;
 		}
 		if (field[get_row][i]->to_char() == 'R' || field[get_row][i]->to_char() == 'Q') {
@@ -316,12 +309,12 @@ bool Chess::check_shah(int get_row, int get_col) {
 
 		}
 	}
-	for (int i = get_row-1; i > -1; i--)
+	for (int i = get_row-1; i > -1; i--)//check rook and queen attack from the top
 	{
 		if (field[get_row][i] == nullptr) {
 			continue;
 		}
-		if (field[get_row][i]->get_color() == field[get_row][get_col]->get_color() && field[get_row][get_col]->get_color() != 'K') {
+		if (field[get_row][i]->get_color() == field[get_row][get_col]->get_color()) {//they can't attack throw your figure
 			break;
 		}
 		if (field[get_row][i]->to_char() == 'R' || field[get_row][i]->to_char() == 'Q') {
@@ -330,11 +323,11 @@ bool Chess::check_shah(int get_row, int get_col) {
 
 		}
 	}
-	for (int i = get_row+1, j = get_col+1; i < 8 && j < 8; i++, j++) {
+	for (int i = get_row+1, j = get_col+1; i < 8 && j < 8; i++, j++) {//check elephant and queen attack from the botton right
 		if (field[i][j] == nullptr) {
 			continue;
 		}
-		if (field[i][j]->get_color() == field[get_row][get_col]->get_color() && field[get_row][get_col]->get_color() != 'K') {
+		if (field[i][j]->get_color() == field[get_row][get_col]->get_color()) {//they can't attack throw your figure
 			break;
 		}
 		if (field[i][j]->to_char() == 'E' || field[i][j]->to_char() == 'Q') {
@@ -342,11 +335,11 @@ bool Chess::check_shah(int get_row, int get_col) {
 			return false;
 		}
 	}
-	for (int i = get_row-1, j = get_col-1; i > -1 && j > -1; i--, j--) {
+	for (int i = get_row-1, j = get_col-1; i > -1 && j > -1; i--, j--) {//check elephant and queen attack from the top left
 		if (field[i][j] == nullptr) {
 			continue;
 		}
-		if (field[i][j]->get_color() == field[get_row][get_col]->get_color() && field[get_row][get_col]->get_color() != 'K') {
+		if (field[i][j]->get_color() == field[get_row][get_col]->get_color()) {//they can't attack throw your figure
 			break;
 		}
 		if (field[i][j]->to_char() == 'E' || field[i][j]->to_char() == 'Q') {
@@ -354,11 +347,11 @@ bool Chess::check_shah(int get_row, int get_col) {
 			return false;
 		}
 	}
-	for (int i = get_row+1, j = get_col-1; i < 8 && j > -1; i++, j--) {
+	for (int i = get_row+1, j = get_col-1; i < 8 && j > -1; i++, j--) {//check elephant and queen attack from the botton left
 		if (field[i][j] == nullptr) {
 			continue;
 		}
-		if (field[i][j]->get_color() == field[get_row][get_col]->get_color() && field[get_row][get_col]->get_color() != 'K') {
+		if (field[i][j]->get_color() == field[get_row][get_col]->get_color()) {//they can't attack throw your figure
 			break;
 		}
 		if (field[i][j]->to_char() == 'E' || field[i][j]->to_char() == 'Q') {
@@ -366,11 +359,11 @@ bool Chess::check_shah(int get_row, int get_col) {
 			return false;
 		}
 	}
-	for (int i = get_row-1, j = get_col+1; i > -1 && j < 8; i--, j++) {
+	for (int i = get_row-1, j = get_col+1; i > -1 && j < 8; i--, j++) {//check elephant and queen attack from the top right
 		if (field[i][j] == nullptr) {
 			continue;
 		}
-		if (field[i][j]->get_color() == field[get_row][get_col]->get_color() && field[get_row][get_col]->get_color() != 'K') {
+		if (field[i][j]->get_color() == field[get_row][get_col]->get_color()) {//they can't attack throw your figure
 			break;
 		}
 		if (field[i][j]->to_char() == 'E' || field[i][j]->to_char() == 'Q') {
@@ -384,53 +377,52 @@ bool Chess::check_shah(int get_row, int get_col) {
 		                     (get_row - 2 > -1 && field[get_row - 2][get_col - 1] != nullptr && field[get_row - 2][get_col - 1]->to_char() == 'H' && field[get_row - 2][get_col - 1]->get_color() != field[get_row][get_col]->get_color())))){
 		cout << "your king is under attack" << endl;
 		return false;
-	}
+	}//check a horse attack
 	if((get_col + 1 < 8 && ((get_row + 1 < 8 && field[get_row + 1][get_col + 1] != nullptr && field[get_row + 1][get_col + 1]->to_char() == 'K') ||
 		                      (get_row - 1 > -1 && field[get_row - 1][get_col + 1] != nullptr && field[get_row - 1][get_col + 1]->to_char() == 'K')))||
 	   (get_col - 1 > -1 && ((get_row + 1 < 8 && field[get_row + 1][get_col - 1] != nullptr && field[get_row + 1][get_col - 1]->to_char() == 'K') ||
 	                          (get_row - 1 > -1 && field[get_row - 1][get_col - 1] != nullptr && field[get_row - 1][get_col - 1]->to_char() == 'K')))){
 		cout << "your king is under attack" << endl;
 		return false;
-	}
+	}//check king attack
 	return true;
 }
 
 bool Chess::make_turn(char cur_color) {
 	while (true) {
 		int col_t, row_t, col_n, row_n, k = 0;
-		int row_tf, row_nf;
-		char col_tf, col_nf;
 		char color_next;
-		cout << "input the cage where your figure is" << endl;
+		cout << "input the cell where your figure is" << endl;
+		char col_tf;
+		int row_tf;
 		cin >> row_tf >> col_tf;
 		row_t = 7 - row_tf + 1;
 		col_t = col_tf - 'a';
-		cout << "input the cage where your figure will move" << endl;
+		cout << "input the cell where your figure will move" << endl;
+		int row_nf;
+		char col_nf;
 		cin >> row_nf >> col_nf;
 		row_n = 7 - row_nf + 1;
 		col_n = col_nf - 'a';
-		if (field[row_n][col_n] == nullptr) color_next = '0';
-		else color_next = field[row_n][col_n]->get_color();
+		if (field[row_n][col_n] == nullptr) {
+			color_next = '0';
+		}
+		else {
+			color_next = field[row_n][col_n]->get_color();
+		}
 		if (field[row_t][col_t] == nullptr) {
 			cout << "there is no Figure" << endl;
 			continue;
 		}
 		if (cur_color == field[row_t][col_t]->get_color()) {
 
-			if (field[row_t][col_t]->get_color() != cur_color) {
-				cout << "it's not your figure" << endl;
-				continue;
-			}
 			if (!(field[row_t][col_t]->check_turn(row_n, col_n, color_next))) {
-//				cout << "figure can't make this turn" << endl;
 				continue;
 			}
-			int col, row, k = 0;
 			if (field[row_t][col_t]->to_char() == 'P') {
 				if (field[row_t][col_t]->get_color() == 'w') {
 					if (row_t == 6 && row_n == 4) {
 						if (!(field[5][col_t] == nullptr)) {
-							//				if (next->line == 7) become_new_figure();
 							cout << "figure can't make this turn" << endl;
 							continue;
 						}
@@ -439,23 +431,22 @@ bool Chess::make_turn(char cur_color) {
 				if (field[row_t][col_t]->get_color() == 'b') {
 					if (row_t == 1 && row_n == 3) {
 						if (!(field[2][col_t] == nullptr)) {
-							//				if (next->line == 7) become_new_figure();
 							cout << "figure can't make this turn" << endl;
 							continue;
 						}
 					}
 				}
-				if (field[row_n][col_n] == nullptr && col_n == col_t) { 
-				}
-				else if(abs(col_t-col_n) && abs(row_n - row_t)){}
+				if (field[row_n][col_n] == nullptr && col_n == col_t) {}
+				else if(abs(col_t-col_n) == abs(row_n - row_t)){}
 				else {
 					cout << "figure can't make this turn" << endl;
 					continue;
-				}
+				}//if we do not attack any figure our destination cell shoul be empty
 			}
-			else if (field[row_t][col_t]->to_char() == 'H') {}
-			else if (field[row_t][col_t]->to_char() == 'K') {}
+			else if (field[row_t][col_t]->to_char() == 'H') {}// it way will check in another place
+			else if (field[row_t][col_t]->to_char() == 'K') {}// it way will check in another place
 			else {
+				int col, row, k = 0;
 				if (abs(col_t - col_n) == abs(row_t - row_n)) {
 					col = 1;
 					row = 1;
@@ -470,7 +461,7 @@ bool Chess::make_turn(char cur_color) {
 				}
 				if (col_n < col_t) col = -col;
 				if (row_n < row_t) row = -row;
-				for (int i = col, j = row; col_t + i != col_n || row_t + j != row_n; i += col, j += row) {
+				for (int i = col, j = row; col_t + i != col_n || row_t + j != row_n; i += col, j += row) {//checking that you are not jumping
 					if (field[row_t + j][col_t + i] != nullptr) {
 						k = 1;
 						break;
@@ -494,7 +485,7 @@ bool Chess::make_turn(char cur_color) {
 				if(field[row_n][col_n] != nullptr) delete keep;
 				return true;
 			}
-			else {
+			else {//backup
 				field[row_t][col_t] = field[row_n][col_n];
 				field[row_t][col_t]->set_col(col_t);
 				field[row_t][col_t]->set_row(row_t);
@@ -524,24 +515,20 @@ void Chess::print_field() {
 		cout << endl;
 	}
 	cout << "  ";
-	for (char i = 'a'; i < 'i'; i++) cout << i << "  ";
+	for (char i = 'a'; i < 'i'; i++) {
+		cout << i << "  ";
+	}
 	cout << endl;
 }
 
 void Chess::start_game() {
-	int linet, linen;
-	int columnt, columnn;
 	char cur_color = 'w';
 	char prev_color = 'b';
 	while (true) {
 		print_field();
-//		cin >> linet >> columnt >> linen >> columnn;
-//		if (cur_color == field[linet][columnt]->get_color()) {
 			if (make_turn(cur_color)) {
 				swap(cur_color, prev_color);
 			}
-//		}
-//		else cout << "It is not your turn" << endl;
 	}
 }
 
