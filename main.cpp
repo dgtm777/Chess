@@ -24,10 +24,6 @@ public:
 			cout << "There are your figure" << endl; 
 			return false; 
 		}
-		if (!(dst_col < 8 && dst_col >= 0 && get_col() >= 0 && get_col() < 8 && dst_row < 8 && dst_row >= 0 && get_row() >= 0 && get_row() < 8)) {
-			cout << "the move is not correct" << endl;
-			return false;
-		}
 		return true;
 	}
 	virtual bool check_turn(int dst_row, int dst_col, char dst_color) {
@@ -390,20 +386,55 @@ bool Chess::check_shah(int get_row, int get_col) { //I move king anyways and the
 
 bool Chess::make_turn(char cur_color) {
 	while (true) {
-		int col_t, row_t, col_n, row_n, k = 0;
-		char color_next;
 		cout << "input the cell where your figure is" << endl;
-		char col_tf;
-		int row_tf;
-		cin >> row_tf >> col_tf;
-		row_t = 7 - row_tf + 1;
-		col_t = col_tf - 'a';
+		string s;
+		getline(cin, s);
+		int it;
+		for (it=0; s[it] == ' ' && s[it] != '/n'; it++) {
+		}
+		if (s[it] == '/n') {
+			continue;
+		}
+		if (!(s[it] >= 'a' && s[it] <= 'z')) {
+			continue;
+		}
+		int col_t;
+		col_t = s[it] - 'a';
+		for(it++; s[it] ==' ' && s[it] != '/n'; it++){
+		}
+		if (s[it] == '/n') {
+			continue;
+		}
+		if (!(s[it] >= '0' && s[it] < '8')) {
+			continue;
+		}
+		int row_t;
+		row_t = 7 - s[it] + '0' + 1;
 		cout << "input the cell where your figure will move" << endl;
-		int row_nf;
-		char col_nf;
-		cin >> row_nf >> col_nf;
-		row_n = 7 - row_nf + 1;
-		col_n = col_nf - 'a';
+		getline(cin, s);
+		for (it=0; s[it] == ' ' && s[it] != '/n'; it++) {}
+		if (s[it] == '/n') {
+			continue;
+		}
+		if (!(s[it] >= 'a' && s[it] <= 'z')) {
+			continue;
+		}
+		int col_n;
+		col_n = s[it] - 'a';
+		for (it++; s[it] == ' ' && s[it] != '/0'; it++) {}
+		if (s[it] == '/n') {
+			continue;
+		}
+		if (!(s[it] >= '0' && s[it] < '8')) {
+			continue;
+		}
+		int row_n;
+		row_n = 7 - s[it] + '0' + 1;
+		if (!(col_n < 8 && col_n >= 0 && col_t >= 0 && col_t < 8 && row_n < 8 && row_n >= 0 && row_t >= 0 && row_t < 8)) {
+			cout << "the move is not correct" << endl;
+			continue;
+		}
+		char color_next;
 		if (field[row_n][col_n] == nullptr) {
 			color_next = '0';
 		}
