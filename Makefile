@@ -17,4 +17,10 @@ figures.o: figures.h
 chess.o: chess.h figures.h
 
 clean: 
-	$(RM) main *.o
+	$(RM) main test *.o
+
+test: test.o figures.o chess.o
+	$(CXX) $(CXXFLAGS) -o test test.o figures.o chess.o -L/opt/gtest/lib -lgtest -lgtest_main -lpthread
+
+test.o: test.cpp
+	$(CXX) $(CXXFLAGS) -c test.cpp -I/opt/gtest/include

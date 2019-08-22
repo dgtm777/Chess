@@ -5,8 +5,13 @@
     "tasks": [
         {
             "type": "shell",
-            "label": "g++ build active file",
-            "command": "make",
+            "label": "make main",
+            "command": "make main",
+        }
+        {
+            "type": "shell",
+            "label": "make test",
+            "command": "make test",
         }
     ]
 }
