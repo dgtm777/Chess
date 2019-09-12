@@ -63,17 +63,17 @@ bool Pawn::check_turn(int dst_row, int dst_col, char dst_color) {
         return false;
     }
     if (get_color() == 'b') {
-        if (!(dst_row < 7)) {// black pawn can't be in a 7th row 
+        if (!(dst_row > 0)) {// black pawn can't be in a 7th row 
             return false;
         }
         if (get_col() == dst_col) {
             if (dst_row - get_row() == 1) {
-//					if (dst_row == 0) become_new_figure(); TODO
+//					if (dst_row == 7) become_new_figure(); TODO
                 return true;
             }
             if (get_row() == 1 && dst_row == 3) {
 //					if (field[2][col]->color == "empty") { TODO
-//						if (dst_row == 0) become_new_figure();
+//						if (dst_row == 7) become_new_figure();
                     return true;
 //				}
             }
@@ -83,17 +83,17 @@ bool Pawn::check_turn(int dst_row, int dst_col, char dst_color) {
         }
     }
     if (get_color() == 'w') {
-        if (!(get_row() > 0)) {// white pawn can't be in a 0 row
+        if (!(get_row() < 7)) {// white pawn can't be in a 0 row
             return false;
         }
         if (get_col() == dst_col) {
             if (get_row() - dst_row == 1) {
-//				if (dst_row == 7) become_new_figure(); TODO
+//				if (dst_row == 0) become_new_figure(); TODO
                 return true;
             }
             if (get_row() == 6 && dst_row == 4) {
 //				if (field[5][col]->get_color() == "empty") { TODO
-//					if (dst_row == 7) become_new_figure();
+//					if (dst_row == 0) become_new_figure();
                     return true;
 //					}
             }
